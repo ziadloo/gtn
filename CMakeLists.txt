@@ -6,6 +6,7 @@ find_program(NVCC_EXECUTABLE nvcc HINTS /usr/local/cuda/bin $ENV{CUDA_HOME}/bin)
 
 if(NVCC_EXECUTABLE)
   enable_language(CUDA)
+  include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 endif()
 
 if(NVCC_EXECUTABLE)

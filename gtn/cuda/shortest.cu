@@ -1,5 +1,6 @@
 #include <thrust/device_vector.h>
 #include <thrust/fill.h>
+#include <thrust/execution_policy.h>
 
 #include "gtn/creations.h"
 #include "gtn/cuda/cuda.h"
