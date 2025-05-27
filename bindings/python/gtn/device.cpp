@@ -1,4 +1,3 @@
-
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
 
@@ -16,12 +15,13 @@ PYBIND11_MODULE(device, m) {
 
   m.attr("CPU") = DeviceType::CPU;
   m.attr("CUDA") = DeviceType::CUDA;
-  
-  auto&& device_class = py::class_<Device>(m, "Device")
-      .def(py::init<DeviceType>(), "type"_a)
-      .def(py::init<DeviceType, int>(), "type"_a, "index"_a);
 
-  device_class.def(pybind11::self == pybind11::self);
-  device_class.def(pybind11::self != pybind11::self);
+  // Declare device_class as a named variable of py::class_<Device>
+  // and then chain the def calls
+  py::class_<Device> device_class(m, "Device");
 
+  device_class.def(py::init<DeviceType>(), "type"_a)
+              .def(py::init<DeviceType, int>(), "type"_a, "index"_a)
+              .def(py::self == py::self) // Now calling .def on the named variable
+              .def(py::self != py::self); // And here
 }

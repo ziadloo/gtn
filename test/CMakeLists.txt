@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.1)
+cmake_minimum_required(VERSION 3.17...3.27)
 
 function(find_python_exec DST)
   if (WIN32)

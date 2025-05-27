@@ -1,25 +1,46 @@
-cmake_minimum_required(VERSION 3.5.1)
+cmake_minimum_required(VERSION 3.17...3.27)
 
 project(gtn LANGUAGES CXX)
 
+find_program(NVCC_EXECUTABLE nvcc HINTS /usr/local/cuda/bin $ENV{CUDA_HOME}/bin)
+
+if(NVCC_EXECUTABLE)
+  enable_language(CUDA)
+endif()
+
+if(NVCC_EXECUTABLE)
+  enable_language(CUDA)
+  set(CUDA_AVAILABLE ON)
+else()
+  set(CUDA_AVAILABLE OFF)
+  message(STATUS "CUDA_AVAILABLE IS OFF")
+endif()
 
 # ----------------------------- Setup -----------------------------
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-find_package(CUDA 9.0)
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
 
 # ----------------------------- Configuration -----------------------------
 option(GTN_BUILD_TESTS "Build tests for gtn" ON)
 option(GTN_BUILD_BENCHMARKS "Build benchmarks for gtn" ON)
 option(GTN_BUILD_EXAMPLES "Build examples for gtn" ON)
-option(GTN_BUILD_CUDA "Build cuda backend for gtn" ${CUDA_FOUND})
+option(GTN_BUILD_CUDA "Build cuda backend for gtn" ${CUDA_AVAILABLE})
 option(GTN_BUILD_PYTHON_BINDINGS "Build python bindings for gtn" OFF)
 
 # ----------------------------- Dependencies -----------------------------
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
+
+message(STATUS "CUDA_AVAILABLE: ${CUDA_AVAILABLE} GTN_BUILD_CUDA: ${GTN_BUILD_CUDA}")
+
+# Determine if CUDA is available
+if(GTN_BUILD_CUDA AND NOT CUDA_AVAILABLE)
+  message(FATAL_ERROR "Requested CUDA but not found, halting the process")
+  return()
+endif()
 
 if (GTN_BUILD_CUDA)
   include_directories(${CUDA_INCLUDE_DIRS})
@@ -47,7 +68,6 @@ add_library(
   ${GTN_SOURCES}
 )
 
-include(${CMAKE_SOURCE_DIR}/gtn/cuda/CMakeLists.txt)
 if (GTN_BUILD_CUDA)
   target_sources(gtn PRIVATE ${GTN_CUDA_SOURCES})
 else()
@@ -68,7 +88,7 @@ target_include_directories(
 if (GTN_BUILD_PYTHON_BINDINGS)
   message(STATUS "Building Python bindings.")
   include(${CMAKE_MODULE_PATH}/Buildpybind11.cmake)
-  include(${CMAKE_MODULE_PATH}/pybind11Tools.cmake)
+
   add_subdirectory(${PROJECT_SOURCE_DIR}/bindings/python)
 endif()
 

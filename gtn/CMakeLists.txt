@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.1)
+cmake_minimum_required(VERSION 3.17...3.27)
 
 set(
   GTN_SOURCES
@@ -31,4 +31,22 @@ set(
   ${CMAKE_CURRENT_SOURCE_DIR}/gtn/rand.h
   ${CMAKE_CURRENT_SOURCE_DIR}/gtn/utils.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/gtn/utils.h
+)
+
+set(
+  GTN_NO_CUDA_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/gtn/cuda/cuda.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/gtn/cuda/nocuda.cpp
+)
+
+set(
+  GTN_CUDA_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/gtn/cuda/creations.cu
+  ${CMAKE_CURRENT_SOURCE_DIR}/gtn/cuda/creations.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/gtn/cuda/compose.cu
+  ${CMAKE_CURRENT_SOURCE_DIR}/gtn/cuda/cuda.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/gtn/cuda/cuda.cu
+  ${CMAKE_CURRENT_SOURCE_DIR}/gtn/cuda/functions.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/gtn/cuda/functions.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/gtn/cuda/shortest.cu
 )

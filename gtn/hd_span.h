@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <stdexcept>
 
 #include "device.h"
 #include "gtn/cuda/cuda.h"
