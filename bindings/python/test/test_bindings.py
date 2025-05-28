@@ -22,11 +22,11 @@ def list_almost_equal(list1, list2, tolerance=1e-7):
 
 class DeviceTesetCase(unittest.TestCase):
 
-  def test_device(self):
-    self.assertEqual(gtn.Device(gtn.CUDA, 0), gtn.Device(gtn.CUDA, 0))
-    self.assertEqual(gtn.Device(gtn.CPU), gtn.Device(gtn.CPU))
-    self.assertNotEqual(gtn.Device(gtn.CPU), gtn.Device(gtn.CUDA, 0))
-    self.assertNotEqual(gtn.Device(gtn.CUDA, 0), gtn.Device(gtn.CUDA, 1))
+    def test_device(self):
+        self.assertEqual(gtn.Device(gtn.CUDA, 0), gtn.Device(gtn.CUDA, 0))
+        self.assertEqual(gtn.Device(gtn.CPU), gtn.Device(gtn.CPU))
+        self.assertNotEqual(gtn.Device(gtn.CPU), gtn.Device(gtn.CUDA, 0))
+        self.assertNotEqual(gtn.Device(gtn.CUDA, 0), gtn.Device(gtn.CUDA, 1))
 
 
 class GraphTestCase(unittest.TestCase):

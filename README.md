@@ -73,14 +73,6 @@ print(g1.grad().weights_to_list()) # [1.0, 0.0, 1.0, 0.0]
 - A C++ compiler with good C++14 support (e.g. g++ >= 5)
 - `cmake` >= 3.5.1, and `make`
 
-### Python
-
-Install the Python bindings with
-
-```
-pip install gtn
-```
-
 ### Building C++ from source
 
 First, clone the project:
@@ -116,19 +108,19 @@ conda activate gtn_env
 Required dependencies:
 ```
 cd bindings/python
-conda install setuptools
+conda install -c conda-forge cxx-compiler libstdcxx-ng pybind11
+```
+
+If you want the CUDA version, install the nvcc too:
+
+```
+conda install nvidia::cuda-nvcc
 ```
 
 Use one of the following commands for installation:
 
 ```
-python setup.py install
-```
-
-or, to install in editable mode (for dev):
-
-```
-python setup.py develop
+pip install .
 ```
 
 Python binding tests can be run with `make test`, or with
