@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17...3.27)
+cmake_minimum_required(VERSION 3.18...3.27)
 
 function (add_pybind11_extension ext_name rel_path)
   if ("${rel_path}" STREQUAL "")

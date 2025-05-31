@@ -33,10 +33,28 @@ class CMakeExtension(Extension):
 
 
 class CMakeBuild(build_ext):
+    def initialize_options(self):
+        build_ext.initialize_options(self)
+        self.options_cuda = "auto"
+
+    def finalize_options(self):
+        build_ext.finalize_options(self)
+
+        self.options_cuda = os.environ.get("CUDA", "auto").lower()
+        if self.options_cuda not in [
+            "on",
+            "off",
+            "auto",
+        ]:
+            raise ValueError(
+                f"Invalid cuda options: {self.options_cuda}. Must be one of on, off, auto."
+            )
+
     def build_extension(self, ext: CMakeExtension) -> None:
         # Must be in this form due to bug in .resolve() only fixed in Python 3.10+
         ext_fullpath = Path.cwd() / self.get_ext_fullpath(ext.name)
         extdir = ext_fullpath.parent.resolve()
+        # extdir = Path(self.build_lib) / ext.name
         srcdir = os.path.abspath("src")
 
         # Using this requires trailing slash for auto-detection & inclusion of
@@ -50,7 +68,6 @@ class CMakeBuild(build_ext):
         cmake_generator = os.environ.get("CMAKE_GENERATOR", "")
 
         # Set Python_EXECUTABLE instead if you use PYBIND11_FINDPYTHON
-        # EXAMPLE_VERSION_INFO shows you how to pass a value into the C++ code
         # from Python.
         cmake_args = [
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}{os.sep}",
@@ -61,14 +78,14 @@ class CMakeBuild(build_ext):
             "-DGTN_BUILD_BENCHMARKS=OFF",
             "-DGTN_BUILD_TESTS=OFF",
         ]
+        if self.options_cuda != "auto":
+            cmake_args += [f"-DGTN_BUILD_CUDA={self.options_cuda.upper()}"]
+
         build_args = []
         # Adding CMake arguments set as environment variable
         # (needed e.g. to build for ARM OSx on conda-forge)
         if "CMAKE_ARGS" in os.environ:
             cmake_args += [item for item in os.environ["CMAKE_ARGS"].split(" ") if item]
-
-        # In this example, we pass in the version to C++. You might not need to.
-        cmake_args += [f"-DEXAMPLE_VERSION_INFO={self.distribution.get_version()}"]
 
         if self.compiler.compiler_type != "msvc":
             # Using Ninja-build since it a) is available as a wheel and b)
@@ -128,7 +145,6 @@ class CMakeBuild(build_ext):
         if not build_temp.exists():
             build_temp.mkdir(parents=True)
 
-        print(["cmake", srcdir, *cmake_args])
         subprocess.run(["cmake", srcdir, *cmake_args], cwd=build_temp, check=True)
         subprocess.run(
             ["cmake", "--build", ".", *build_args], cwd=build_temp, check=True
@@ -138,7 +154,7 @@ class CMakeBuild(build_ext):
 # The information here can also be placed in setup.cfg - better separation of
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
-    name="cmake_example",
+    name="gtn",
     version="0.0.1",
     author="GTN Contributors",
     description="Automatic differentiation with WFSTs",
@@ -148,16 +164,7 @@ setup(
     packages=["gtn", "gtn.criterion"],
     package_dir={"": "src/bindings/python/", "gtn": "src/bindings/python/gtn"},
     ext_modules=[
-        CMakeExtension("gtn.graph"),
-        CMakeExtension("gtn.device"),
-        CMakeExtension("gtn.autograd"),
-        CMakeExtension("gtn.cuda"),
-        CMakeExtension("gtn.utils"),
-        CMakeExtension("gtn.rand"),
-        CMakeExtension("gtn.creations"),
-        CMakeExtension("gtn.criterions"),
-        CMakeExtension("gtn.functions"),
-        CMakeExtension("gtn.parallel"),
+        CMakeExtension("gtn.gtn"),
     ],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17...3.27)
+cmake_minimum_required(VERSION 3.18...3.27)
 
 project(gtn LANGUAGES CXX)
 
@@ -56,9 +56,8 @@ endif()
 include(${CMAKE_SOURCE_DIR}/gtn/CMakeLists.txt)
 
 if (GTN_BUILD_CUDA)
-  # TODO, better way to set these arch flags
+  set(CMAKE_CUDA_ARCHITECTURES 80 86 89)
   add_compile_options(
-    $<$<COMPILE_LANGUAGE:CUDA>:-arch=sm_80>
     $<$<COMPILE_LANGUAGE:CUDA>:-default-stream=per-thread>
     $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda>)
 endif()

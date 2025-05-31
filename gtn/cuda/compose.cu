@@ -7,10 +7,8 @@
 
 #include <algorithm>
 #include <cassert>
-#include <numeric>
-#include <vector>
 #include <tuple>
-#include <sstream>
+#include <cuda/std/functional>
 
 #include <thrust/device_ptr.h>
 #include <thrust/logical.h>
@@ -23,6 +21,7 @@
 
 
 using namespace gtn::detail;
+namespace _cuda = cuda;
 
 namespace gtn {
 namespace cuda {
@@ -87,7 +86,7 @@ inline ExploreState indexToState(size_t n, int numFirst) {
 
 bool checkAnyTrue(const HDSpan<bool>& flags) {
   thrust::device_ptr<const bool> tPtr(flags.data());
-  return thrust::any_of(tPtr, tPtr + flags.size(), thrust::identity<bool>());
+  return thrust::any_of(tPtr, tPtr + flags.size(), _cuda::std::identity());
 }
 
 void setFalse(HDSpan<bool>& span) {

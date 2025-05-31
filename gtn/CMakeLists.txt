@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17...3.27)
+cmake_minimum_required(VERSION 3.18...3.27)
 
 set(
   GTN_SOURCES

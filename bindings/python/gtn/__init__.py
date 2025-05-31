@@ -20,6 +20,7 @@ from .rand import *
 from .parallel import *
 from . import cuda
 
+
 def draw(graph, file_name, isymbols={}, osymbols={}):
     ext = os.path.splitext(file_name)[1]
     with tempfile.NamedTemporaryFile() as tmpf:
