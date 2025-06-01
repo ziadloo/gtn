@@ -36,18 +36,28 @@ class CMakeBuild(build_ext):
     def initialize_options(self):
         build_ext.initialize_options(self)
         self.options_cuda = "auto"
+        self.options_tests = "off"
 
     def finalize_options(self):
         build_ext.finalize_options(self)
 
-        self.options_cuda = os.environ.get("CUDA", "auto").lower()
+        self.options_cuda = os.environ.get("CUDA", "AUTO").upper()
         if self.options_cuda not in [
-            "on",
-            "off",
-            "auto",
+            "ON",
+            "OFF",
+            "AUTO",
         ]:
             raise ValueError(
-                f"Invalid cuda options: {self.options_cuda}. Must be one of on, off, auto."
+                f"Invalid CUDA options: {self.options_cuda}. Must be one of ON, OFF, or [AUTO]."
+            )
+
+        self.options_tests = os.environ.get("TESTS", "OFF").upper()
+        if self.options_tests not in [
+            "ON",
+            "OFF",
+        ]:
+            raise ValueError(
+                f"Invalid TESTS options: {self.options_tests}. Must be one of ON, or [OFF]."
             )
 
     def build_extension(self, ext: CMakeExtension) -> None:
@@ -76,10 +86,10 @@ class CMakeBuild(build_ext):
             "-DGTN_BUILD_PYTHON_BINDINGS=ON",
             "-DGTN_BUILD_EXAMPLES=OFF",
             "-DGTN_BUILD_BENCHMARKS=OFF",
-            "-DGTN_BUILD_TESTS=OFF",
+            f"-DGTN_BUILD_TESTS={self.options_tests}",
         ]
-        if self.options_cuda != "auto":
-            cmake_args += [f"-DGTN_BUILD_CUDA={self.options_cuda.upper()}"]
+        if self.options_cuda != "AUTO":
+            cmake_args += [f"-DGTN_BUILD_CUDA={self.options_cuda}"]
 
         build_args = []
         # Adding CMake arguments set as environment variable
