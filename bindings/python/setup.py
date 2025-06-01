@@ -37,6 +37,8 @@ class CMakeBuild(build_ext):
         build_ext.initialize_options(self)
         self.options_cuda = "auto"
         self.options_tests = "off"
+        self.options_benchmarks = "off"
+        self.options_examples = "off"
 
     def finalize_options(self):
         build_ext.finalize_options(self)
@@ -49,6 +51,24 @@ class CMakeBuild(build_ext):
         ]:
             raise ValueError(
                 f"Invalid CUDA options: {self.options_cuda}. Must be one of ON, OFF, or [AUTO]."
+            )
+
+        self.options_examples = os.environ.get("EXAMPLES", "OFF").upper()
+        if self.options_examples not in [
+            "ON",
+            "OFF",
+        ]:
+            raise ValueError(
+                f"Invalid EXAMPLES options: {self.options_examples}. Must be one of ON, or [OFF]."
+            )
+
+        self.options_benchmarks = os.environ.get("BENCHMARKS", "OFF").upper()
+        if self.options_benchmarks not in [
+            "ON",
+            "OFF",
+        ]:
+            raise ValueError(
+                f"Invalid BENCHMARKS options: {self.options_benchmarks}. Must be one of ON, or [OFF]."
             )
 
         self.options_tests = os.environ.get("TESTS", "OFF").upper()
@@ -84,8 +104,8 @@ class CMakeBuild(build_ext):
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE={cfg}",  # not used on MSVC, but no harm
             "-DGTN_BUILD_PYTHON_BINDINGS=ON",
-            "-DGTN_BUILD_EXAMPLES=OFF",
-            "-DGTN_BUILD_BENCHMARKS=OFF",
+            f"-DGTN_BUILD_EXAMPLES={self.options_examples}",
+            f"-DGTN_BUILD_BENCHMARKS={self.options_benchmarks}",
             f"-DGTN_BUILD_TESTS={self.options_tests}",
         ]
         if self.options_cuda != "AUTO":
